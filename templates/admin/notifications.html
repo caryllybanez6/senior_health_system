@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Barangay Sto. Niño | Notifications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --primary-soft: #a5d6a7;
+            --primary-bg: #e8f5e9;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-600: #757575;
+            --gray-800: #424242;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+        body {
+            background: var(--gray-100);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--gray-800);
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .back-btn:hover {
+            background: var(--primary-bg);
+            color: var(--primary);
+            transform: translateX(-3px);
+        }
+        .container-custom {
+            max-width: 1300px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+        .page-header p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        .btn-refresh {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+        }
+        .notifications-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        .badge-unread {
+            background: #fff8e1;
+            color: #f57c00;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .badge-read {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .badge-type {
+            background: var(--primary-bg);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+        .table-custom {
+            margin-bottom: 0;
+        }
+        .table-custom th {
+            background: var(--gray-100);
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .table-custom td {
+            padding: 14px 12px;
+            font-size: 0.8rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .table-custom tr:hover {
+            background: var(--gray-50);
+        }
+        .message-preview {
+            max-width: 280px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.4;
+            margin-bottom: 16px;
+            color: var(--gray-600);
+        }
+        .empty-state h5 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        .empty-state p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        @media (max-width: 768px) {
+            .container-custom { margin-top: 100px; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .table-responsive { font-size: 0.75rem; }
+            .message-preview { max-width: 150px; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="/admin/dashboard" class="back-btn">
+    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+</a>
+
+<div class="container-custom">
+    <div class="page-header">
+        <div>
+            <h2><i class="fas fa-bell me-2" style="color: var(--primary);"></i> Notifications</h2>
+            <p>Latest notifications generated by the system for senior appointments</p>
+        </div>
+        <button class="btn-refresh" onclick="location.reload()">
+            <i class="fas fa-sync-alt me-2"></i>Refresh
+        </button>
+    </div>
+
+    {% if notifications %}
+    <div class="notifications-card">
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Senior</th>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Message</th>
+                        <th>Via</th>
+                        <th>Status</th>
+                        <th style="width: 140px;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notif in notifications %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ notif.senior_name or 'System' }}</strong>
+                        </td>
+                        <td><span class="badge-type"><i class="fas fa-tag me-1"></i>{{ notif.type or 'announcement' }}</span></td>
+                        <td><strong>{{ notif.title }}</strong></td>
+                        <td><div class="message-preview" title="{{ notif.message }}">{{ notif.message }}</div></td>
+                        <td>
+                            {% if notif.sent_via == 'email' %}
+                                <i class="fas fa-envelope me-1" style="color: var(--primary);"></i> Email
+                            {% elif notif.sent_via == 'system' %}
+                                <i class="fas fa-bell me-1" style="color: var(--primary);"></i> System
+                            {% else %}
+                                {{ notif.sent_via or 'system' }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if notif.is_read %}
+                                <span class="badge-read"><i class="fas fa-check-circle me-1"></i>Read</span>
+                            {% else %}
+                                <span class="badge-unread"><i class="fas fa-circle me-1"></i>Unread</span>
+                            {% endif %}
+                        </td>
+                        <td><small class="text-muted">{{ notif.created_at.strftime('%Y-%m-%d %H:%M') if notif.created_at else notif.created_at }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="notifications-card">
+        <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <h5>No notifications yet</h5>
+            <p>Once seniors receive appointment updates, they will appear here.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

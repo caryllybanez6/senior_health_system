@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Barangay Sto. Niño | Queue Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --primary-soft: #a5d6a7;
+            --primary-bg: #e8f5e9;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-600: #757575;
+            --gray-800: #424242;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+        body {
+            background: var(--gray-100);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--gray-800);
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .back-btn:hover {
+            background: var(--primary-bg);
+            color: var(--primary);
+            transform: translateX(-3px);
+        }
+        .container-custom {
+            max-width: 1400px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+        .page-header p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        .btn-refresh {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+        }
+        .queue-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .priority-critical { background: #dc3545; color: white; }
+        .priority-high { background: #fd7e14; color: white; }
+        .priority-medium { background: #ffc107; color: #333; }
+        .priority-normal { background: #28a745; color: white; }
+        .priority-low { background: #6c757d; color: white; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .status-waiting { background: #fff8e1; color: #f57c00; }
+        .status-progress { background: #e3f2fd; color: #1565c0; }
+        .status-completed { background: #e8f5e9; color: #2e7d32; }
+        .status-skipped { background: #ffebee; color: #c62828; }
+        .btn-action {
+            border: none;
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-action-start { background: #17a2b8; color: white; }
+        .btn-action-start:hover { background: #138496; transform: translateY(-1px); }
+        .btn-action-complete { background: #28a745; color: white; }
+        .btn-action-complete:hover { background: #218838; transform: translateY(-1px); }
+        .btn-action-skip { background: #dc3545; color: white; }
+        .btn-action-skip:hover { background: #c82333; transform: translateY(-1px); }
+        .btn-view {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+        }
+        .btn-view:hover { background: var(--gray-200); }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state i { font-size: 4rem; opacity: 0.4; margin-bottom: 16px; color: var(--gray-600); }
+        .empty-state h5 { font-size: 1.1rem; font-weight: 500; color: var(--gray-600); }
+        .table-custom th {
+            background: var(--gray-100);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .table-custom td {
+            padding: 14px 12px;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .table-custom tr:hover { background: var(--gray-100); }
+        @media (max-width: 768px) {
+            .container-custom { margin-top: 100px; }
+            .table-responsive { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="/admin/dashboard" class="back-btn">
+    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+</a>
+
+<div class="container-custom">
+    <div class="page-header">
+        <div>
+            <h2><i class="fas fa-clock me-2" style="color: var(--primary);"></i> Queue Management</h2>
+            <p>Current waiting queue for approved appointments</p>
+        </div>
+        <button class="btn-refresh" onclick="location.reload()">
+            <i class="fas fa-sync-alt me-2"></i>Refresh Queue
+        </button>
+    </div>
+
+    {% if queue_items %}
+    <div class="queue-card">
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr><th>Pos</th><th>Queue #</th><th>Senior</th><th>Service</th><th>Priority</th><th>Wait</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in queue_items %}
+                    <tr>
+                        <td><strong>#{{ item.position }}</strong></td>
+                        <td><span class="badge bg-primary">{{ item.queue_number }}</span></td>
+                        <td>
+                            {{ item.senior_name }}<br>
+                            <small class="text-muted">Age {{ item.age }}</small>
+                        </td>
+                        <td>{{ item.service_type }}</td>
+                        <td>
+                            <span class="priority-badge priority-{{ item.priority_level.split()[0].lower() if item.priority_level else 'low' }}">
+                                {{ item.priority_level or 'NORMAL' }}
+                            </span>
+                        </td>
+                        <td>{{ item.estimated_wait_time or '--' }} min</td>
+                        <td>
+                            {% if item.queue_status == 'in_progress' %}
+                                <span class="status-badge status-progress">In Progress</span>
+                            {% elif item.queue_status == 'completed' %}
+                                <span class="status-badge status-completed">Completed</span>
+                            {% elif item.queue_status == 'skipped' %}
+                                <span class="status-badge status-skipped">Skipped</span>
+                            {% else %}
+                                <span class="status-badge status-waiting">Waiting</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <button class="btn-view" onclick="viewDetails('{{ item.appointment_id }}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <form method="POST" action="/admin/queue/update/{{ item.queue_id }}" style="display:inline;">
+                                    <input type="hidden" name="action" value="start">
+                                    <button type="submit" class="btn-action btn-action-start" title="Start">Start</button>
+                                </form>
+                                <form method="POST" action="/admin/queue/update/{{ item.queue_id }}" style="display:inline;">
+                                    <input type="hidden" name="action" value="complete">
+                                    <button type="submit" class="btn-action btn-action-complete" title="Complete">Done</button>
+                                </form>
+                                <form method="POST" action="/admin/queue/update/{{ item.queue_id }}" style="display:inline;">
+                                    <input type="hidden" name="action" value="skip">
+                                    <button type="submit" class="btn-action btn-action-skip" title="Skip" onclick="return confirm('Skip this queue entry?')">Skip</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="queue-card">
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h5>No active queue entries found</h5>
+            <p class="text-muted">There are no approved appointments currently waiting in the queue.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function viewDetails(id) {
+        alert('View queue details for appointment #' + id + '\n\nYou can manage this appointment from the Appointments page.');
+    }
+</script>
+</body>
+</html>

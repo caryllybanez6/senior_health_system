@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Barangay Sto. Niño | Senior Citizens Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --primary-soft: #a5d6a7;
+            --primary-bg: #e8f5e9;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-600: #757575;
+            --gray-800: #424242;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+        body {
+            background: var(--gray-100);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--gray-800);
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .back-btn:hover {
+            background: var(--primary-bg);
+            color: var(--primary);
+            transform: translateX(-3px);
+        }
+        .container-custom {
+            max-width: 1400px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+        .search-box {
+            position: relative;
+            min-width: 260px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+        .search-box input {
+            padding-left: 38px;
+            border-radius: 50px;
+            border: 1px solid var(--gray-200);
+            padding: 10px 16px 10px 38px;
+            font-size: 0.85rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(46,125,50,0.2);
+        }
+        .senior-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.25s;
+            height: 100%;
+        }
+        .senior-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-soft);
+        }
+        .senior-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 10px rgba(46,125,50,0.2);
+        }
+        .info-row {
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        .info-row i {
+            width: 22px;
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        .medical-tag {
+            background: var(--primary-bg);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .btn-view {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-view:hover {
+            background: var(--primary-bg);
+            border-color: var(--primary-soft);
+            color: var(--primary);
+        }
+        hr {
+            margin: 12px 0;
+            opacity: 0.3;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+        .empty-state i { font-size: 4rem; opacity: 0.4; margin-bottom: 16px; color: var(--gray-600); }
+        .empty-state h5 { font-size: 1.1rem; font-weight: 500; color: var(--gray-600); }
+        @media (max-width: 768px) {
+            .container-custom { margin-top: 100px; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .search-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="/admin/dashboard" class="back-btn">
+    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+</a>
+
+<div class="container-custom">
+    <div class="page-header">
+        <h2><i class="fas fa-users me-2" style="color: var(--primary);"></i> Senior Citizens Records</h2>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by name...">
+        </div>
+    </div>
+
+    <div class="row" id="seniorsList">
+        {% for senior in seniors %}
+        <div class="col-md-6 col-lg-4" data-name="{{ senior.full_name.lower() }}">
+            <div class="senior-card">
+                <div class="d-flex gap-3 align-items-start">
+                    <div class="senior-avatar flex-shrink-0">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-semibold mb-1">{{ senior.full_name }}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-id-card me-1"></i> {{ senior.senior_id_number }}
+                        </small>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="info-row"><i class="fas fa-calendar-alt"></i> Age: {{ senior.age }}</div>
+                        <div class="info-row"><i class="fas fa-venus-mars"></i> {{ senior.gender }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="info-row"><i class="fas fa-phone"></i> {{ senior.contact_number }}</div>
+                        <div class="info-row"><i class="fas fa-envelope"></i> {{ senior.email[:20] }}{% if senior.email|length > 20 %}...{% endif %}</div>
+                    </div>
+                </div>
+                <div class="info-row mt-1">
+                    <i class="fas fa-map-marker-alt"></i> {{ senior.address[:45] }}{% if senior.address|length > 45 %}...{% endif %}
+                </div>
+                {% if senior.medical_conditions %}
+                <div class="mt-2">
+                    <span class="medical-tag"><i class="fas fa-notes-medical me-1"></i> {{ senior.medical_conditions[:35] }}{% if senior.medical_conditions|length > 35 %}...{% endif %}</span>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar-plus me-1"></i> Registered: {{ senior.created_at.strftime('%Y-%m-%d') if senior.created_at else 'N/A' }}
+                    </small>
+                    <button class="btn-view" data-id="{{ senior.id }}" onclick="viewProfile(this.dataset.id)">
+                        <i class="fas fa-eye me-1"></i>View Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <h5>No senior citizens registered yet</h5>
+                <p class="text-muted small">New senior records will appear here when they register.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const cards = document.querySelectorAll('[data-name]');
+        
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            if (name.includes(searchTerm)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    function viewProfile(id) {
+        alert(`👤 Senior Profile\n\nViewing details for Senior #${id}\n\nThis will show complete information including medical history and appointment records.`);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Senior Care System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px 20px;
+        }
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .register-header {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .register-header img {
+            height: 55px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        .register-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .register-header p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        .register-body {
+            padding: 25px;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            font-size: 0.85rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+        }
+        .btn-register {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            width: 100%;
+            color: white;
+        }
+        .btn-register:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(46,125,50,0.3);
+        }
+        .section-title {
+            background: #f1f8e9;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .alert {
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+        .form-check-label {
+            font-size: 0.8rem;
+        }
+        a {
+            color: #2e7d32;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        hr {
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-card">
+        <div class="register-header">
+            <img src="/static/images/logo.jpg" alt="Logo">
+            <h3>Senior Registration</h3>
+            <p>Join Barangay Sto. Niño Senior Care System</p>
+        </div>
+        <div class="register-body">
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST">
+                <div class="section-title">
+                    <i class="fas fa-user-circle me-2"></i>Personal Information
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="full_name" class="form-control" required placeholder="Juan M. Dela Cruz">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Age *</label>
+                        <input type="number" name="age" class="form-control" required min="60" max="120">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Birthdate *</label>
+                        <input type="date" name="birthdate" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Gender *</label>
+                        <select name="gender" class="form-select" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Senior ID Number *</label>
+                        <input type="text" name="senior_id_number" class="form-control" required placeholder="OSCA ID Number">
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <label class="form-label">Complete Address *</label>
+                    <textarea name="address" class="form-control" rows="2" required placeholder="House/Street, Barangay, City"></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Contact Number *</label>
+                        <input type="tel" name="contact_number" class="form-control" required placeholder="09XX XXX XXXX">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" name="email" class="form-control" required placeholder="email.com">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Emergency Contact</label>
+                        <input type="tel" name="emergency_contact" class="form-control" placeholder="Relative/Caregiver">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Medical Conditions</label>
+                        <input type="text" name="medical_conditions" class="form-control" placeholder="Diabetes, Hypertension, etc.">
+                    </div>
+                </div>
+                
+                <div class="section-title mt-3">
+                    <i class="fas fa-laptop me-2"></i>Account Information
+                </div>
+                
+                <div class="mb-2">
+                    <label class="form-label">Username *</label>
+                    <input type="text" name="username" class="form-control" required placeholder="Choose a username">
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-control" required placeholder="Min. 8 characters">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" name="confirm_password" class="form-control" required placeholder="Retype password">
+                    </div>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-check me-2"></i>Register Account
+                </button>
+            </form>
+            <hr>
+            <div class="text-center">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+                <a href="/"><i class="fas fa-arrow-left me-1"></i>Back to Home</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #2e7d32; color: white;">
+                    <h5 class="modal-title">Terms and Conditions</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Data Privacy</h6>
+                    <p>Your personal and medical information will be kept confidential and used only for healthcare purposes.</p>
+                    <h6>2. Appointment Policy</h6>
+                    <p>Please arrive on time for your scheduled appointments.</p>
+                    <h6>3. Emergency Cases</h6>
+                    <p>In case of emergency, please call 911 immediately.</p>
+                    <h6>4. Cancellation</h6>
+                    <p>Cancel appointments at least 2 hours in advance.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" style="background: #2e7d32; color: white;" data-bs-dismiss="modal">I Understand</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.querySelector('input[name="password"]').value;
+            const confirm = document.querySelector('input[name="confirm_password"]').value;
+            if (password !== confirm) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+    </script>
+</body>
+</html>
