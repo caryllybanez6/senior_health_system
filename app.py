@@ -1057,7 +1057,8 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("🚀 AI-Enhanced e-Health System for Senior Citizens")
     print("="*60)
-    print(f"📍 Server running at: http://localhost:5000")
+    port = int(os.environ.get('PORT', 5000))
+    print(f"📍 Server running at port: {port}")
     print(f"🔑 Admin Login: username='admin', password='admin123'")
     print("\n📧 Email Notification Status:")
     if MAIL_CONFIG.get('MAIL_USERNAME') and MAIL_CONFIG.get('MAIL_PASSWORD'):
@@ -1065,4 +1066,5 @@ if __name__ == '__main__':
     else:
         print("   ⚠️ Email NOT configured - add MAIL_USERNAME and MAIL_PASSWORD to .env")
     print("="*60 + "\n")
-    app.run(debug=True, port=5000)
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    app.run(debug=not is_production, host='0.0.0.0', port=port)
