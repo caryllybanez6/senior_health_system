@@ -184,17 +184,19 @@ else:
         3306
     )
 
-    database_exists = bool(database)
-    host_exists = bool(host)
-    user_exists = bool(user)
+    db_env_present = any([
+        raw_database_url,
+        host, user, database,
+        os.getenv('MYSQLHOST'), os.getenv('MYSQL_HOST'),
+        os.getenv('MYSQLUSER'), os.getenv('MYSQL_USER'),
+        os.getenv('MYSQLDATABASE'), os.getenv('MYSQL_DATABASE'),
+        os.getenv('RAILWAY_MYSQL_HOST'), os.getenv('RAILWAY_MYSQL_USER'),
+        os.getenv('RAILWAY_MYSQL_DATABASE'), os.getenv('RAILWAY_MYSQL_PORT'),
+        os.getenv('RAILWAY_DATABASE_URL'), os.getenv('DATABASE_URL')
+    ])
 
-    if not (host_exists or user_exists or database_exists):
+    if not db_env_present and os.getenv('RAILWAY_STATIC_URL'):
         DB_SOURCE = 'missing_db_env'
-        host = host or 'localhost'
-        user = user or 'root'
-        password = password or ''
-        database = database or 'senior_health_system'
-        port = port or 3306
     else:
         DB_SOURCE = 'fallback_env_vars'
 

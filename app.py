@@ -1084,6 +1084,9 @@ if __name__ == '__main__':
     print(f"📍 Server running at port: {port}")
     print(f"🔑 Admin Login: username='admin', password='admin123'")
     print(f"📡 DB source={DB_SOURCE} host={DB_CONFIG.get('host')} database={DB_CONFIG.get('database')} port={DB_CONFIG.get('port')} raw_database_url={'SET' if raw_database_url else 'NONE'}")
+    if DB_SOURCE == 'missing_db_env':
+        print('⚠️ Railway app detected but no MySQL DB credentials are configured.')
+        print('   Add a Railway MySQL service or set RAILWAY_MYSQL_HOST, RAILWAY_MYSQL_USER, RAILWAY_MYSQL_PASSWORD, RAILWAY_MYSQL_DATABASE, RAILWAY_MYSQL_PORT.')
     relevant_env_keys = sorted([
         key for key in os.environ
         if any(tok in key.lower() for tok in ('mysql', 'db', 'database', 'railway', 'url', 'host', 'user', 'password', 'port', 'connstr', 'uri'))

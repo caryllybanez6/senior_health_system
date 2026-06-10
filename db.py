@@ -35,6 +35,12 @@ class Database:
             print(f"Env RAILWAY_DATABASE_URL set={'yes' if os.getenv('RAILWAY_DATABASE_URL') else 'no'}")
             print(f"Env RAILWAY_MYSQL_URL set={'yes' if os.getenv('RAILWAY_MYSQL_URL') else 'no'}")
             return None
+
+        if DB_SOURCE == 'missing_db_env':
+            print('❌ Railway detected but no database credentials were found.')
+            print('   Set Railway MySQL env vars or link a MySQL service.')
+            print('   Required env vars: RAILWAY_MYSQL_HOST, RAILWAY_MYSQL_USER, RAILWAY_MYSQL_PASSWORD, RAILWAY_MYSQL_DATABASE, RAILWAY_MYSQL_PORT')
+            return None
     
     @staticmethod
     def execute_query(query, params=None, fetch_one=False, fetch_all=False):
