@@ -3,6 +3,7 @@ from mysql.connector import Error
 import bcrypt
 import os
 from dotenv import load_dotenv
+from config import DB_CONFIG
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,18 +12,36 @@ def create_database_and_tables():
     """Initialize MySQL database and create all tables"""
 
     try:
-        # Connect to MySQL server (without database first)
-        connection = mysql.connector.connect(
-            host=os.getenv('MYSQL_HOST', 'localhost'),
-            user=os.getenv('MYSQL_USER', 'root'),
-            password=os.getenv('MYSQL_PASSWORD', '')
-        )
-        cursor = connection.cursor()
+        db_name = DB_CONFIG.get('database') or os.getenv('MYSQL_DATABASE', 'senior_health_system')
+        connection_params = {
+            'host': DB_CONFIG.get('host', os.getenv('MYSQL_HOST', 'localhost')),
+            'user': DB_CONFIG.get('user', os.getenv('MYSQL_USER', 'root')),
+            'password': DB_CONFIG.get('password', os.getenv('MYSQL_PASSWORD', '')),
+            'port': int(DB_CONFIG.get('port', os.getenv('MYSQL_PORT', 3306) or 3306))
+        }
 
-        # Create database if not exists
-        db_name = os.getenv('MYSQL_DATABASE', 'senior_health_system')
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
-        cursor.execute(f"USE {db_name}")
+        # First try to connect using the configured database if it exists.
+        try:
+            connection = mysql.connector.connect(**{
+                **connection_params,
+                'database': db_name
+            })
+        except Error as e:
+            # If the database does not yet exist, connect without it and create it.
+            if getattr(e, 'errno', None) == 1049:
+                connection = mysql.connector.connect(**connection_params)
+                cursor = connection.cursor()
+                cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
+                cursor.execute(f"USE `{db_name}`")
+            else:
+                raise
+        else:
+            cursor = connection.cursor()
+
+        # Create database if not exists when connected without a database
+        if connection.database is None:
+            cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
+            cursor.execute(f"USE `{db_name}`")
 
         # SQL schema definitions
         tables_sql = """
