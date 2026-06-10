@@ -13,8 +13,31 @@ def _env_first(*names, default=None):
     return default
 
 
+def _is_database_url(value):
+    if not value or not isinstance(value, str):
+        return False
+    lower = value.strip().lower()
+    if lower.startswith(('mysql://', 'mariadb://')):
+        return True
+    if 'password=' in lower and ('data source=' in lower or 'server=' in lower or 'host=' in lower or 'database=' in lower):
+        return True
+    return False
+
+
+def _is_web_url(value):
+    if not value or not isinstance(value, str):
+        return False
+    lower = value.strip().lower()
+    if lower.startswith(('http://', 'https://')):
+        return any(domain in lower for domain in (
+            '.up.railway.app', 'railway.app', 'herokuapp.com', 'vercel.app',
+            'fly.dev', 'netlify.app', 'azurewebsites.net'
+        ))
+    return False
+
+
 def _find_database_url():
-    # First, try specific database URL env vars (not web URLs)
+    # First, try specific database URL env vars
     candidates = [
         'DATABASE_URL', 'MYSQL_URL', 'MYSQL_DATABASE_URL',
         'RAILWAY_DATABASE_URL', 'RAILWAY_MYSQL_URL', 'RAILWAY_MYSQL',
@@ -25,25 +48,17 @@ def _find_database_url():
 
     for name in candidates:
         value = os.getenv(name)
-        if value and (value.startswith('mysql://') or value.startswith('mariadb://') or 'Password=' in value):
+        if _is_database_url(value) and not _is_web_url(value):
             return name, value
 
-    # Look for generic URL-like env vars but filter out web domains
+    # Look for generic database connection strings in env vars
     for name, value in os.environ.items():
         lower_name = name.lower()
-        if not value or lower_name.endswith('_url') or lower_name.endswith('_uri'):
+        if not value:
             continue
-        
-        # Skip web URLs (those containing .up.railway.app, herokuapp.com, etc without connection info)
-        if '.up.railway.app' in value or 'herokuapp.com' in value:
-            continue
-        
-        # Look for actual connection strings
-        if ('url' in lower_name or 'uri' in lower_name or 'connstr' in lower_name) and (
-            'database' in lower_name or 'db' in lower_name or 'mysql' in lower_name
-        ):
-            if value.startswith('mysql://') or value.startswith('mariadb://') or 'Password=' in value or '://' in value:
-                return name, value
+
+        if _is_database_url(value) and not _is_web_url(value):
+            return name, value
 
     return None, None
 
