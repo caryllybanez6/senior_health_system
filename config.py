@@ -5,7 +5,9 @@ from urllib.parse import urlparse
 load_dotenv()
 
 # Database URL support for Railway and other hosts
-database_url = os.getenv('DATABASE_URL') or os.getenv('MYSQL_URL') or os.getenv('RAILWAY_DATABASE_URL') or os.getenv('RAILWAY_MYSQL_URL')
+database_url = (os.getenv('DATABASE_URL') or os.getenv('MYSQL_URL') or
+                os.getenv('RAILWAY_DATABASE_URL') or os.getenv('RAILWAY_MYSQL_URL') or
+                os.getenv('RAILWAY_MYSQL'))
 
 def _parse_database_url(url):
     parsed = urlparse(url)
@@ -13,7 +15,8 @@ def _parse_database_url(url):
         'host': parsed.hostname,
         'user': parsed.username,
         'password': parsed.password,
-        'database': parsed.path.lstrip('/') if parsed.path else ''
+        'database': parsed.path.lstrip('/') if parsed.path else '',
+        'port': parsed.port or int(os.getenv('MYSQL_PORT', 3306))
     }
 
 if database_url:
@@ -23,7 +26,8 @@ else:
         'host': os.getenv('MYSQL_HOST', 'localhost'),
         'user': os.getenv('MYSQL_USER', 'root'),
         'password': os.getenv('MYSQL_PASSWORD', ''),
-        'database': os.getenv('MYSQL_DATABASE', 'senior_health_system')
+        'database': os.getenv('MYSQL_DATABASE', 'senior_health_system'),
+        'port': int(os.getenv('MYSQL_PORT', 3306))
     }
 
 # Email Configuration

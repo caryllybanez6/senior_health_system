@@ -7,16 +7,21 @@ class Database:
     @staticmethod
     def get_connection():
         try:
-            connection = mysql.connector.connect(
-                host=DB_CONFIG['host'],
-                user=DB_CONFIG['user'],
-                password=DB_CONFIG['password'],
-                database=DB_CONFIG['database'],
-                autocommit=False
-            )
+            connection_params = {
+                'host': DB_CONFIG.get('host', 'localhost'),
+                'user': DB_CONFIG.get('user', 'root'),
+                'password': DB_CONFIG.get('password', ''),
+                'database': DB_CONFIG.get('database', ''),
+                'autocommit': False
+            }
+            if DB_CONFIG.get('port'):
+                connection_params['port'] = int(DB_CONFIG['port'])
+
+            connection = mysql.connector.connect(**connection_params)
             return connection
         except Error as e:
-            print(f"Error: {e}")
+            print(f"Database connection error: {e}")
+            print(f"DB_CONFIG host={DB_CONFIG.get('host')} user={DB_CONFIG.get('user')} database={DB_CONFIG.get('database')} port={DB_CONFIG.get('port')}")
             return None
     
     @staticmethod
