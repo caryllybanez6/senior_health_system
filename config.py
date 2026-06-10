@@ -29,11 +29,20 @@ def _is_web_url(value):
         return False
     lower = value.strip().lower()
     if lower.startswith(('http://', 'https://')):
-        return any(domain in lower for domain in (
-            '.up.railway.app', 'railway.app', 'herokuapp.com', 'vercel.app',
-            'fly.dev', 'netlify.app', 'azurewebsites.net'
-        ))
-    return False
+        return True
+    return any(domain in lower for domain in (
+        '.up.railway.app', 'railway.app', 'herokuapp.com', 'vercel.app',
+        'fly.dev', 'netlify.app', 'azurewebsites.net'
+    ))
+
+
+def _is_db_env_name(name):
+    if not name or not isinstance(name, str):
+        return False
+    lower_name = name.lower()
+    if any(skip in lower_name for skip in ('static_url', 'public_domain', 'private_domain', 'hostname', 'deployment_id', 'service_id', 'git_branch', 'git_commit')):
+        return False
+    return any(token in lower_name for token in ('mysql', 'db', 'database', 'connstr', 'uri', 'url'))
 
 
 def _find_database_url():
@@ -53,11 +62,23 @@ def _find_database_url():
 
     # Look for generic database connection strings in env vars
     for name, value in os.environ.items():
-        lower_name = name.lower()
         if not value:
             continue
+        lower_name = name.lower()
 
-        if _is_database_url(value) and not _is_web_url(value):
+        if not _is_db_env_name(lower_name):
+            continue
+
+        if _is_web_url(value):
+            continue
+
+        if _is_database_url(value):
+            return name, value
+
+        if '://' in value and any(token in lower_name for token in ('mysql', 'mariadb', 'db', 'database')):
+            return name, value
+
+        if '=' in value and any(param in value.lower() for param in ('host=', 'user=', 'password=', 'database=', 'data source=')):
             return name, value
 
     return None, None
@@ -79,8 +100,8 @@ raw_database_url_name, raw_database_url = _find_database_url()
 # Validate that raw_database_url is actually a database connection, not a web URL
 if raw_database_url:
     parsed = urlparse(raw_database_url)
-    if not ((parsed.scheme and parsed.username) or 'Password=' in raw_database_url or ';' in raw_database_url):
-        raw_database_url = None  # Reject web URLs without auth
+    if _is_web_url(raw_database_url) or not ((parsed.scheme and parsed.username) or 'password=' in raw_database_url.lower() or ';' in raw_database_url):
+        raw_database_url = None  # Reject web URLs or non-auth URLs
 
 
 def _safe_int(value, default):
