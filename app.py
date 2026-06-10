@@ -37,10 +37,16 @@ mail = Mail(app)
 notification = NotificationSystem(MAIL_CONFIG)
 
 # Ensure database, tables, and default admin exist before handling requests
-@app.before_first_request
+database_initialized = False
+
+@app.before_request
 def initialize_database():
+    global database_initialized
+    if database_initialized:
+        return
     try:
         init_db.create_database_and_tables()
+        database_initialized = True
     except Exception as e:
         print(f"⚠️ Failed to initialize database: {e}")
 
