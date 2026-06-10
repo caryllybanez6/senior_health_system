@@ -508,6 +508,14 @@ def index():
         # allow form to indicate user_type (if present on homepage form)
         form_user_type = request.form.get('user_type')
 
+        if not username or not password:
+            return render_template('index.html', error='Please enter both username and password')
+
+        # Basic DB health check before login queries
+        db_health = Database.execute_query("SELECT 1", fetch_one=True)
+        if db_health is None:
+            return render_template('index.html', error='Database connection failed. Please check your Railway settings.')
+
         # Check admin first (keeps previous behavior)
         admin = Database.execute_query(
             "SELECT * FROM admin WHERE username = %s",
