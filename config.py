@@ -14,28 +14,36 @@ def _env_first(*names, default=None):
 
 
 def _find_database_url():
+    # First, try specific database URL env vars (not web URLs)
     candidates = [
         'DATABASE_URL', 'MYSQL_URL', 'MYSQL_DATABASE_URL',
         'RAILWAY_DATABASE_URL', 'RAILWAY_MYSQL_URL', 'RAILWAY_MYSQL',
-        'DB_URL', 'DB_DATABASE_URL', 'MARIADB_URL', 'RAILWAY_URL',
-        'RAILWAY_DATABASE', 'MYSQLCONNSTR', 'MYSQLCONNSTR_localdb',
+        'DB_URL', 'DB_DATABASE_URL', 'MARIADB_URL',
+        'MYSQLCONNSTR', 'MYSQLCONNSTR_localdb',
         'CLEARDB_DATABASE_URL', 'JAWSDB_URL'
     ]
 
     for name in candidates:
         value = os.getenv(name)
-        if value:
+        if value and (value.startswith('mysql://') or value.startswith('mariadb://') or 'Password=' in value):
             return name, value
 
-    # Generic fallback: any env name carrying URL/URI/CONNSTR and DB/MYSQL/RAILWAY hints
+    # Look for generic URL-like env vars but filter out web domains
     for name, value in os.environ.items():
         lower_name = name.lower()
-        if not value:
+        if not value or lower_name.endswith('_url') or lower_name.endswith('_uri'):
             continue
+        
+        # Skip web URLs (those containing .up.railway.app, herokuapp.com, etc without connection info)
+        if '.up.railway.app' in value or 'herokuapp.com' in value:
+            continue
+        
+        # Look for actual connection strings
         if ('url' in lower_name or 'uri' in lower_name or 'connstr' in lower_name) and (
-            'database' in lower_name or 'db' in lower_name or 'mysql' in lower_name or 'railway' in lower_name
+            'database' in lower_name or 'db' in lower_name or 'mysql' in lower_name
         ):
-            return name, value
+            if value.startswith('mysql://') or value.startswith('mariadb://') or 'Password=' in value or '://' in value:
+                return name, value
 
     return None, None
 
@@ -52,6 +60,12 @@ def _find_env_value(label_parts, required_parts=None, default=None):
 
 
 raw_database_url_name, raw_database_url = _find_database_url()
+
+# Validate that raw_database_url is actually a database connection, not a web URL
+if raw_database_url:
+    parsed = urlparse(raw_database_url)
+    if not ((parsed.scheme and parsed.username) or 'Password=' in raw_database_url or ';' in raw_database_url):
+        raw_database_url = None  # Reject web URLs without auth
 
 
 def _safe_int(value, default):
@@ -124,28 +138,28 @@ if raw_database_url:
     DB_SOURCE = raw_database_url_name or 'raw_database_url'
 else:
     host = _env_first(
-        'MYSQL_HOST', 'DB_HOST', 'RAILWAY_HOST', 'RAILWAY_MYSQL_HOST',
+        'MYSQLHOST', 'MYSQL_HOST', 'DB_HOST', 'RAILWAY_HOST', 'RAILWAY_MYSQL_HOST',
         'DATABASE_HOST', 'DATABASE_SERVER', default=None
     ) or _find_env_value(['host'], ['mysql', 'db', 'railway'], default='localhost')
 
     user = _env_first(
-        'MYSQL_USER', 'MYSQL_USERNAME', 'DB_USER', 'DB_USERNAME',
+        'MYSQLUSER', 'MYSQL_USER', 'MYSQL_USERNAME', 'DB_USER', 'DB_USERNAME',
         'RAILWAY_USER', 'RAILWAY_MYSQL_USER', 'DATABASE_USER', 'DATABASE_USERNAME',
         default=None
     ) or _find_env_value(['user'], ['mysql', 'db', 'railway'], default='root')
 
     password = _env_first(
-        'MYSQL_PASSWORD', 'DB_PASSWORD', 'RAILWAY_PASSWORD', 'RAILWAY_MYSQL_PASSWORD',
+        'MYSQLPASSWORD', 'MYSQL_PASSWORD', 'DB_PASSWORD', 'RAILWAY_PASSWORD', 'RAILWAY_MYSQL_PASSWORD',
         'DATABASE_PASSWORD', 'DB_PASSWORD', default=None
     ) or _find_env_value(['password'], ['mysql', 'db', 'railway'], default='')
 
     database = _env_first(
-        'MYSQL_DATABASE', 'DB_DATABASE', 'RAILWAY_DATABASE', 'RAILWAY_MYSQL_DATABASE',
+        'MYSQLDATABASE', 'MYSQL_DATABASE', 'DB_DATABASE', 'RAILWAY_DATABASE', 'RAILWAY_MYSQL_DATABASE',
         'DATABASE_NAME', 'DB_NAME', default=None
     ) or _find_env_value(['database'], ['mysql', 'db', 'railway'], default='senior_health_system')
 
     port = _safe_int(
-        _env_first('MYSQL_PORT', 'DB_PORT', 'RAILWAY_PORT', 'RAILWAY_MYSQL_PORT',
+        _env_first('MYSQLPORT', 'MYSQL_PORT', 'DB_PORT', 'RAILWAY_PORT', 'RAILWAY_MYSQL_PORT',
                    'DATABASE_PORT', default=None) or _find_env_value(['port'], ['mysql', 'db', 'railway'], default=3306),
         3306
     )
