@@ -97,6 +97,11 @@ def _parse_database_url(url):
         return _parse_mysqlconnstr(normalized_url)
 
     parsed = urlparse(normalized_url)
+    
+    host = parsed.hostname or os.getenv('MYSQL_HOST') or os.getenv('DB_HOST') or os.getenv('DATABASE_HOST') or 'localhost'
+    user = parsed.username or os.getenv('MYSQL_USER') or os.getenv('DB_USER') or os.getenv('DATABASE_USER') or 'root'
+    password = parsed.password or os.getenv('MYSQL_PASSWORD') or os.getenv('DB_PASSWORD') or os.getenv('DATABASE_PASSWORD') or ''
+    
     database = parsed.path.lstrip('/') if parsed.path else ''
     if not database:
         query_params = parse_qs(parsed.query or '')
@@ -104,12 +109,14 @@ def _parse_database_url(url):
     if not database:
         database = os.getenv('MYSQL_DATABASE', os.getenv('DB_DATABASE', 'senior_health_system'))
 
+    port = parsed.port or _safe_int(os.getenv('MYSQL_PORT', os.getenv('DB_PORT', 3306)), 3306)
+
     return {
-        'host': parsed.hostname,
-        'user': parsed.username,
-        'password': parsed.password,
+        'host': host,
+        'user': user,
+        'password': password,
         'database': database,
-        'port': parsed.port or _safe_int(os.getenv('MYSQL_PORT', os.getenv('DB_PORT', 3306)), 3306)
+        'port': port
     }
 
 if raw_database_url:
