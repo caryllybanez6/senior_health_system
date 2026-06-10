@@ -1,6 +1,7 @@
+import os
 import mysql.connector
 from mysql.connector import Error
-from config import DB_CONFIG  # <-- ITO ANG TAMA, WALANG "utils."
+from config import DB_CONFIG, DB_SOURCE  # <-- ITO ANG TAMA, WALANG "utils."
 
 class Database:
     
@@ -21,7 +22,13 @@ class Database:
             return connection
         except Error as e:
             print(f"Database connection error: {e}")
+            print(f"DB_SOURCE={DB_SOURCE}")
             print(f"DB_CONFIG host={DB_CONFIG.get('host')} user={DB_CONFIG.get('user')} database={DB_CONFIG.get('database')} port={DB_CONFIG.get('port')}")
+            print(f"Env MYSQL_HOST={os.getenv('MYSQL_HOST')} MYSQL_DATABASE={os.getenv('MYSQL_DATABASE')} MYSQL_USER={os.getenv('MYSQL_USER')} MYSQL_PORT={os.getenv('MYSQL_PORT')}")
+            print(f"Env DB_HOST={os.getenv('DB_HOST')} DB_DATABASE={os.getenv('DB_DATABASE')} DB_USER={os.getenv('DB_USER')} DB_PORT={os.getenv('DB_PORT')}")
+            print(f"Env DATABASE_URL set={'yes' if os.getenv('DATABASE_URL') else 'no'}")
+            print(f"Env RAILWAY_DATABASE_URL set={'yes' if os.getenv('RAILWAY_DATABASE_URL') else 'no'}")
+            print(f"Env RAILWAY_MYSQL_URL set={'yes' if os.getenv('RAILWAY_MYSQL_URL') else 'no'}")
             return None
     
     @staticmethod

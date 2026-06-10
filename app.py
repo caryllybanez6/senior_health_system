@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 # ITO ANG TAMANG IMPORT - WALANG "utils."
-from config import DB_CONFIG, MAIL_CONFIG, SECRET_KEY
+from config import DB_CONFIG, MAIL_CONFIG, SECRET_KEY, raw_database_url, DB_SOURCE
 from ai_priority import AIPriorityScorer
 from notification import NotificationSystem
 from db import Database
@@ -1083,6 +1083,12 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"📍 Server running at port: {port}")
     print(f"🔑 Admin Login: username='admin', password='admin123'")
+    print(f"📡 DB source={DB_SOURCE} host={DB_CONFIG.get('host')} database={DB_CONFIG.get('database')} port={DB_CONFIG.get('port')} raw_database_url={'SET' if raw_database_url else 'NONE'}")
+    relevant_env_keys = sorted([
+        key for key in os.environ
+        if any(tok in key.lower() for tok in ('mysql', 'db', 'database', 'railway', 'url', 'host', 'user', 'password', 'port', 'connstr', 'uri'))
+    ])
+    print(f"🔎 Detected DB-related env keys: {relevant_env_keys}")
     print("\n📧 Email Notification Status:")
     if MAIL_CONFIG.get('MAIL_USERNAME') and MAIL_CONFIG.get('MAIL_PASSWORD'):
         print(f"   ✅ Email configured: {MAIL_CONFIG['MAIL_USERNAME']}")
