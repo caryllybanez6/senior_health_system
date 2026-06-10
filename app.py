@@ -13,6 +13,7 @@ from ai_priority import AIPriorityScorer
 from notification import NotificationSystem
 from db import Database
 import api
+import init_db
 # NEW IMPORT FOR EMAIL NOTIFICATION
 import smtplib
 from email.mime.text import MIMEText
@@ -34,6 +35,14 @@ mail = Mail(app)
 
 # Initialize notification system
 notification = NotificationSystem(MAIL_CONFIG)
+
+# Ensure database, tables, and default admin exist before handling requests
+@app.before_first_request
+def initialize_database():
+    try:
+        init_db.create_database_and_tables()
+    except Exception as e:
+        print(f"⚠️ Failed to initialize database: {e}")
 
 # ========== NEW: EMAIL NOTIFICATION CLASS (Integrated) ==========
 class AppointmentEmailNotifier:
