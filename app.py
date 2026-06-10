@@ -1098,5 +1098,4 @@ if __name__ == '__main__':
     else:
         print("   ⚠️ Email NOT configured - add MAIL_USERNAME and MAIL_PASSWORD to .env")
     print("="*60 + "\n")
-    is_production = os.environ.get('FLASK_ENV') == 'production'
-    app.run(debug=not is_production, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
