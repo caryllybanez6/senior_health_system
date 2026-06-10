@@ -57,6 +57,8 @@ def _find_database_url():
 
     for name in candidates:
         value = os.getenv(name)
+        if value and 'static_url' in name.lower():
+            continue
         if _is_database_url(value) and not _is_web_url(value):
             return name, value
 
@@ -66,6 +68,8 @@ def _find_database_url():
             continue
         lower_name = name.lower()
 
+        if 'static_url' in lower_name:
+            continue
         if not _is_db_env_name(lower_name):
             continue
 

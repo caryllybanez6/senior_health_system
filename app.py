@@ -6,6 +6,7 @@ import bcrypt
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import subprocess
 
 # ITO ANG TAMANG IMPORT - WALANG "utils."
 from config import DB_CONFIG, MAIL_CONFIG, SECRET_KEY, raw_database_url, DB_SOURCE
@@ -1083,6 +1084,12 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"📍 Server running at port: {port}")
     print(f"🔑 Admin Login: username='admin', password='admin123'")
+    try:
+        git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        git_hash = 'unknown'
+
+    print(f"📌 App version: {git_hash}")
     print(f"📡 DB source={DB_SOURCE} host={DB_CONFIG.get('host')} database={DB_CONFIG.get('database')} port={DB_CONFIG.get('port')} raw_database_url={'SET' if raw_database_url else 'NONE'}")
     if DB_SOURCE == 'missing_db_env':
         print('⚠️ Railway app detected but no MySQL DB credentials are configured.')
