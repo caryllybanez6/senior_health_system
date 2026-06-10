@@ -101,6 +101,11 @@ def _find_env_value(label_parts, required_parts=None, default=None):
 
 raw_database_url_name, raw_database_url = _find_database_url()
 
+# EXPLICIT: Never use RAILWAY_STATIC_URL as database connection
+if raw_database_url_name == 'RAILWAY_STATIC_URL' or raw_database_url_name == 'RAILWAY_PUBLIC_DOMAIN' or raw_database_url_name == 'RAILWAY_PRIVATE_DOMAIN':
+    raw_database_url = None
+    raw_database_url_name = None
+
 # Validate that raw_database_url is actually a database connection, not a web URL
 if raw_database_url:
     parsed = urlparse(raw_database_url)
