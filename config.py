@@ -153,40 +153,58 @@ if raw_database_url:
     DB_SOURCE = raw_database_url_name or 'raw_database_url'
 else:
     host = _env_first(
-        'MYSQLHOST', 'MYSQL_HOST', 'DB_HOST', 'RAILWAY_HOST', 'RAILWAY_MYSQL_HOST',
-        'DATABASE_HOST', 'DATABASE_SERVER', default=None
-    ) or _find_env_value(['host'], ['mysql', 'db', 'railway'], default='localhost')
+        'RAILWAY_MYSQL_HOST', 'RAILWAY_HOST', 'RAILWAY_DB_HOST', 'RAILWAY_MYSQLHOST',
+        'MYSQLHOST', 'MYSQL_HOST', 'DB_HOST', 'DATABASE_HOST', 'DBHOST',
+        'DATABASE_SERVER', 'MYSQL_HOSTNAME', default=None
+    ) or _find_env_value(['host'], ['mysql', 'db', 'railway'], default=None)
 
     user = _env_first(
-        'MYSQLUSER', 'MYSQL_USER', 'MYSQL_USERNAME', 'DB_USER', 'DB_USERNAME',
-        'RAILWAY_USER', 'RAILWAY_MYSQL_USER', 'DATABASE_USER', 'DATABASE_USERNAME',
-        default=None
-    ) or _find_env_value(['user'], ['mysql', 'db', 'railway'], default='root')
+        'RAILWAY_MYSQL_USER', 'RAILWAY_USER', 'RAILWAY_DB_USER',
+        'MYSQLUSER', 'MYSQL_USER', 'DB_USER', 'DATABASE_USER', 'DATABASE_USERNAME',
+        'DB_USERNAME', default=None
+    ) or _find_env_value(['user'], ['mysql', 'db', 'railway'], default=None)
 
     password = _env_first(
-        'MYSQLPASSWORD', 'MYSQL_PASSWORD', 'DB_PASSWORD', 'RAILWAY_PASSWORD', 'RAILWAY_MYSQL_PASSWORD',
-        'DATABASE_PASSWORD', 'DB_PASSWORD', default=None
-    ) or _find_env_value(['password'], ['mysql', 'db', 'railway'], default='')
+        'RAILWAY_MYSQL_PASSWORD', 'RAILWAY_PASSWORD', 'RAILWAY_DB_PASSWORD',
+        'MYSQLPASSWORD', 'MYSQL_PASSWORD', 'DB_PASSWORD', 'DATABASE_PASSWORD',
+        default=None
+    ) or _find_env_value(['password'], ['mysql', 'db', 'railway'], default=None)
 
     database = _env_first(
-        'MYSQLDATABASE', 'MYSQL_DATABASE', 'DB_DATABASE', 'RAILWAY_DATABASE', 'RAILWAY_MYSQL_DATABASE',
-        'DATABASE_NAME', 'DB_NAME', default=None
-    ) or _find_env_value(['database'], ['mysql', 'db', 'railway'], default='senior_health_system')
+        'RAILWAY_MYSQL_DATABASE', 'RAILWAY_DATABASE', 'RAILWAY_DB_DATABASE',
+        'MYSQLDATABASE', 'MYSQL_DATABASE', 'DB_DATABASE', 'DATABASE_NAME',
+        'DB_NAME', default=None
+    ) or _find_env_value(['database'], ['mysql', 'db', 'railway'], default=None)
 
     port = _safe_int(
-        _env_first('MYSQLPORT', 'MYSQL_PORT', 'DB_PORT', 'RAILWAY_PORT', 'RAILWAY_MYSQL_PORT',
-                   'DATABASE_PORT', default=None) or _find_env_value(['port'], ['mysql', 'db', 'railway'], default=3306),
+        _env_first(
+            'RAILWAY_MYSQL_PORT', 'RAILWAY_PORT', 'RAILWAY_DB_PORT',
+            'MYSQLPORT', 'MYSQL_PORT', 'DB_PORT', 'DATABASE_PORT', default=None
+        ) or _find_env_value(['port'], ['mysql', 'db', 'railway'], default=None),
         3306
     )
 
+    database_exists = bool(database)
+    host_exists = bool(host)
+    user_exists = bool(user)
+
+    if not (host_exists or user_exists or database_exists):
+        DB_SOURCE = 'missing_db_env'
+        host = host or 'localhost'
+        user = user or 'root'
+        password = password or ''
+        database = database or 'senior_health_system'
+        port = port or 3306
+    else:
+        DB_SOURCE = 'fallback_env_vars'
+
     DB_CONFIG = {
-        'host': host,
-        'user': user,
-        'password': password,
-        'database': database,
+        'host': host or 'localhost',
+        'user': user or 'root',
+        'password': password or '',
+        'database': database or 'senior_health_system',
         'port': port
     }
-    DB_SOURCE = 'fallback_env_vars'
 
 # Email Configuration
 MAIL_CONFIG = {
