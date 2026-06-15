@@ -6,3 +6,5 @@ bcrypt==4.0.1
 python-dotenv==1.0.0
 Werkzeug==2.3.7
 gunicorn==20.1.0
+setuptools>=59.0.0
+wheel
