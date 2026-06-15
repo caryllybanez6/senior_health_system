@@ -411,12 +411,12 @@
                     <div class="mb-4">
                         
                        <h1 class="display-5 fw-bold" style="color: #1b4d1b;">
-    Better Care, Closer to Every Senior
+    Healthcare Made Easier, Safer, and More Accessible
 </h1>
 
 <div class="hero-quote mt-3">
     <i class="fas fa-quote-left me-2 text-success"></i>
-    “Healthcare made easier, safer, and more accessible.”
+   "Book appointments with ease, skip long waiting times, and receive timely healthcare support through an intelligent system designed especially for senior citizens."
 </div>
 
 <p class="mt-4 text-secondary">
@@ -445,7 +445,7 @@
                                 <input type="hidden" name="user_type" id="userTypeField" value="senior">
                                 <div class="input-group-custom">
                                     <i class="fas fa-user"></i>
-                                    <input type="text" id="usernameField" placeholder="Username" name="username" autocomplete="off">
+                                    <input type="text" id="usernameField" placeholder="Username, Email, or Senior ID" name="username" autocomplete="off" value="{{ username or '' }}">
                                 </div>
                                 <div class="input-group-custom">
                                     <i class="fas fa-lock"></i>
@@ -454,6 +454,7 @@
                                 </div>
                                 <button type="submit" class="btn-login mt-2" id="loginBtnAction">Login</button>
                             </form>
+                            <p class="small text-muted mt-2">Use the username or the email address you registered with.</p>
                             <div class="register-link">
                                 Don’t have an account? <a href="/register">Register here</a>
                             </div>
@@ -594,7 +595,8 @@
                 opt.classList.add('active');
                 const userType = opt.getAttribute('data-type');
                 updateUserType(userType);
-                // (optional) store for future
+                document.getElementById('userTypeField').value = userType;
+                // store selection for future
                 sessionStorage.setItem('selectedUserType', userType);
             });
         });
